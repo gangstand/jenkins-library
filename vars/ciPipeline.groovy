@@ -12,7 +12,12 @@ def call(Map config) {
         stages {
             stage('Checkout') {
                 steps {
-                    checkout scm
+                    script {
+                        def scmVars = checkout scm
+                        env.APP_GIT_COMMIT = scmVars.GIT_COMMIT
+
+                        echo "Application commit: ${env.APP_GIT_COMMIT}"
+                    }
                 }
             }
 
@@ -27,7 +32,7 @@ def call(Map config) {
                     script {
                         String tag = pipelineRules.isReleaseTag()
                             ? env.TAG_NAME
-                            : env.GIT_COMMIT.take(8)
+                            : env.APP_GIT_COMMIT.take(8)
 
                         config.services.each { serviceName, service ->
 
@@ -70,7 +75,7 @@ def call(Map config) {
                     script {
                         String tag = pipelineRules.isReleaseTag()
                             ? env.TAG_NAME
-                            : env.GIT_COMMIT.take(8)
+                            : env.APP_GIT_COMMIT.take(8)
 
                         String channel = pipelineRules.isDevelopment()
                             ? 'development'
