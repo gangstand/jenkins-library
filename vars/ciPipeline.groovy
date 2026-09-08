@@ -3,6 +3,7 @@ def call(Map config) {
         agent any
 
         options {
+            skipDefaultCheckout(true)
             timestamps()
             disableConcurrentBuilds()
             buildDiscarder(logRotator(numToKeepStr: '20'))
@@ -95,7 +96,6 @@ def call(Map config) {
 
         post {
             always {
-                sh "docker logout '${config.registry}' >/dev/null 2>&1 || true"
                 deleteDir()
             }
         }
